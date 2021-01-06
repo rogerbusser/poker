@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/35ae3676-bf04-45f6-be14-78b7dbf96de7/resourceGroups/robupoker/providers/Microsoft.Web/sites/robupoker",
+    "appService.deploySubpath": ""
+}

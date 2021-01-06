@@ -198,14 +198,14 @@ input[type="range"] {
 
 div#chat {
 	div#messages {
-		border: 1px solid;
-	    border-radius: 8px;
+/*		border: 1px solid;
+	    border-radius: 8px; */
 	    height: 120px;
-	    margin: 8px 8px 0 8px;
-	    background-color: #fff;
+/*	    margin: 8px 8px 0 8px;
+	    background-color: #fff; */
 	    padding: 8px;
 	    overflow: auto;
-
+		font-size: 0.8em;
 	    p {
 	    	margin: 0;
 	    	word-wrap: break-word;
@@ -286,10 +286,15 @@ div.seat {
 	box-shadow: 0 0 5px 0 @dark-purple;
 	-webkit-transition: box-shadow 0.2s ease, border 0.2s ease;
     transition: box-shadow 0.2s ease, border 0.2s ease;
-	&.active {
+/*	&.active {
 		color: @lavender;
 		border: 5px solid @lavender;
 		box-shadow: 0 0 5px 0 @lavender;
+	} */
+	&.active {
+		color: #e87878;
+		border: 5px solid #e87878;
+		box-shadow: 0 0 5px 0 #e87878;
 	}
 	p {
 		text-overflow: ellipsis;
@@ -588,11 +593,15 @@ div.board-wrap {
 }
 
 .bets {
-	position: absolute;
+/*	position: absolute;
 	text-align: center;
 	width: 100%;
-	font-weight: bold;
+	font-weight: bold; */
 	text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    font-weight: bold;
+    font-size: 2em;
+    color: yellow;	
 }
 
 #pot-wrap {
@@ -603,6 +612,7 @@ div.board-wrap {
 		text-align: center;
 		font-weight: bold;
 		text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+		font-size: 1.3em;
 	}
 }
 
@@ -778,7 +788,10 @@ div.board-wrap {
 	}
 
 	div#chat div#messages {
-		height: 76px;
+/*		height: 76px; */
+		height: 120px;
+		overflow: auto;
+		font-size: 0.8em;
 	}
 
 	div#chat input[type="text"] {

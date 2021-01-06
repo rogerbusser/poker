@@ -29,6 +29,41 @@ Pot.prototype.reset = function() {
  * @param array players (the array of the tables as it exists in the table)
  */
 Pot.prototype.addTableBets = function( players ) {
+
+  var playerHasZeroBet= false;
+  var highestBet= 0;
+
+  // Find if there are bets and that at least one player hasn't a bet (was already all-in)
+  for( var i in players ) {
+    if(players[i] && players[i].public.inHand) {
+      if(players[i].public.bet == 0) {
+        playerHasZeroBet= true;
+      }
+      if(players[i].public.bet > highestBet) {
+        highestBet= players[i].public.bet;
+      }
+    }
+  }
+  if(playerHasZeroBet && highestBet > 0) {
+    // we have a zero bet player where is betted
+    // create a new pot
+    this.pots.push(
+      { 
+        amount: 0,
+        contributors: []
+      }
+    );
+  }
+
+  // Now call the recursion
+  this.addTableBetsRecur( players );
+}
+
+/**
+ * Method that gets the bets of the players and adds them to the pot
+ * @param array players (the array of the tables as it exists in the table)
+ */
+Pot.prototype.addTableBetsRecur = function( players ) {
   // Getting the current pot (the one in which new bets should be added)
   var currentPot = this.pots.length-1;
 
@@ -71,7 +106,7 @@ Pot.prototype.addTableBets = function( players ) {
     // If not all the bets are equal, remove from each player's bet the smallest bet
     // amount of the table, add these bets to the pot and then create a new empty pot
     // and recursively add the bets that remained, to the new pot
-    for( var i in players ) {
+  for( var i in players ) {
       if( players[i] && players[i].public.bet ) {
         this.pots[currentPot].amount += smallestBet;
         players[i].public.bet = players[i].public.bet - smallestBet;
@@ -90,7 +125,7 @@ Pot.prototype.addTableBets = function( players ) {
     );
 
     // Recursion
-    this.addTableBets( players );
+    this.addTableBetsRecur( players );
   }
 }
 

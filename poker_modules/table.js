@@ -25,6 +25,8 @@ var Table = function( id, name, eventEmitter, seatsCount, bigBlind, smallBlind, 
 	this.lastPlayerToAct = null;
 	// The game has begun
 	this.gameIsOn = false;
+	// The game has begun and small blind is placed
+	this.gameIsOnAndStarted = false;
 	// The game has only two players
 	this.headsUp = false;
 	// References to all the player objects in the table, indexed by seat number
@@ -206,7 +208,12 @@ Table.prototype.initializeRound = function( changeDealer ) {
 	changeDealer = typeof changeDealer == 'undefined' ? true : changeDealer ;
 
 	if( this.playersSittingInCount > 1 ) {
+		// 
 		// The game is on now
+		if(this.gameIsOn === true){
+			// game has already started, revoke small blind action
+			this.seats[this.public.activeSeat].socket.emit('gameStopped');
+		}
 		this.gameIsOn = true;
 		this.public.board = ['', '', '', '', ''];
 		this.deck.shuffle();
@@ -324,9 +331,10 @@ Table.prototype.initializeNextPhase = function() {
 	this.pot.addTableBets( this.seats );
 	this.public.biggestBet = 0;
 	this.public.activeSeat = this.findNextPlayer( this.public.dealerSeat );
-	this.lastPlayerToAct = this.findPreviousPlayer( this.public.activeSeat );
+	// this.lastPlayerToAct = this.findPreviousPlayer( this.public.activeSeat );
+	// RB changed to find previous player who can do something
+	this.lastPlayerToAct = this.findPreviousPlayer( this.public.activeSeat, ['chipsInPlay', 'inHand']  );
 	this.emitEvent( 'table-data', this.public );
-
 	// If all other players are all in, there should be no actions. Move to the next round.
 	if( this.otherPlayersAreAllIn() ) {
 		var that = this;
@@ -415,7 +423,7 @@ Table.prototype.showdown = function() {
 
 	setTimeout( function(){
 		that.endRound();
-	}, 5000 );
+	}, 10000 );
 };
 
 /**
@@ -440,6 +448,8 @@ Table.prototype.endPhase = function() {
  */
 Table.prototype.playerPostedSmallBlind = function() {
 	var bet = this.seats[this.public.activeSeat].public.chipsInPlay >= this.public.smallBlind ? this.public.smallBlind : this.seats[this.public.activeSeat].public.chipsInPlay;
+	// The game is on now and started
+	this.gameIsOnAndStarted = true;
 	this.seats[this.public.activeSeat].bet( bet );
 	this.log({
 		message: this.seats[this.public.activeSeat].public.name + ' posted the small blind',
@@ -487,10 +497,11 @@ Table.prototype.playerFolded = function() {
 	this.pot.removePlayer( this.public.activeSeat );
 
 	if( this.playersInHandCount <= 1 ) {
-		this.pot.addTableBets( this.seats );
-		var winnersSeat = this.findNextPlayer();
-		this.pot.giveToWinner( this.seats[winnersSeat] );
-		this.endRound();
+		var that = this;
+
+		setTimeout( function(){
+			that.endRound();
+		}, 5000 );
 	} else {
 		if( this.lastPlayerToAct == this.public.activeSeat ) {
 			this.endPhase();
@@ -559,7 +570,9 @@ Table.prototype.playerBetted = function( amount ) {
 
 	this.emitEvent( 'table-data', this.public );
 
-	var previousPlayerSeat = this.findPreviousPlayer();
+	// var previousPlayerSeat = this.findPreviousPlayer();
+	// find previous player who still has betting stack to play with
+	var previousPlayerSeat = this.findPreviousPlayer( this.public.activeSeat, ['chipsInPlay', 'inHand'] );
 
 	if( previousPlayerSeat === this.public.activeSeat ) {
 		this.endPhase();
@@ -587,7 +600,9 @@ Table.prototype.playerRaised = function( amount ) {
 
 	this.emitEvent( 'table-data', this.public );
 
-	var previousPlayerSeat = this.findPreviousPlayer();
+	// var previousPlayerSeat = this.findPreviousPlayer();
+	// find previous player who still has betting stack to play with
+	var previousPlayerSeat = this.findPreviousPlayer( this.public.activeSeat, ['chipsInPlay', 'inHand'] );
 
 	if( previousPlayerSeat === this.public.activeSeat ) {
 		this.endPhase();
@@ -634,7 +649,7 @@ Table.prototype.playerSatIn = function( seat ) {
 	this.emitEvent( 'table-data', this.public );
 
 	// If there are no players playing right now, try to initialize a game with the new player
-	if( !this.gameIsOn && this.playersSittingInCount > 1 ) {
+	if( !this.gameIsOnAndStarted && this.playersSittingInCount > 1 ) {
 		// Initialize the game
 		this.initializeRound( false );
 	}
@@ -747,11 +762,15 @@ Table.prototype.playerSatOut = function( seat, playerLeft ) {
 	this.emitEvent( 'table-data', this.public );
 };
 
+// RB make sure to count the OTHER players
 Table.prototype.otherPlayersAreAllIn = function() {
 	// Check if the players are all in
 	var currentPlayer = this.public.activeSeat;
 	var playersAllIn = 0;
-	for( var i=0 ; i<this.playersInHandCount ; i++ ) {
+	for( var i=0 ; i<this.playersInHandCount ; i++ ) {	// loop through all players
+		if(currentPlayer === this.public.activeSeat) {	// skip the current player
+			continue;
+		}
 		if( this.seats[currentPlayer].public.chipsInPlay === 0 ) {
 			playersAllIn++;
 		}
@@ -784,8 +803,14 @@ Table.prototype.endRound = function() {
 	this.pot.addTableBets( this.seats );
 
 	if( !this.pot.isEmpty() ) {
-		var winnersSeat = this.findNextPlayer( 0 );
-		this.pot.giveToWinner( this.seats[winnersSeat] );
+		var winnersSeat = this.findNextPlayer();
+		var msg = this.pot.giveToWinner( this.seats[winnersSeat] );
+		this.log({
+			message: msg,
+			action: '',
+			seat: '',
+			notification: ''
+		});
 	}
 
 	// Sitting out the players who don't have chips
@@ -816,6 +841,7 @@ Table.prototype.stopGame = function() {
 	this.lastPlayerToAct = null;
 	this.removeAllCardsFromPlay();
 	this.gameIsOn = false;
+	this.gameIsOnAndStarted = false;
 	this.emitEvent( 'gameStopped', this.public );
 };
 

@@ -159,7 +159,7 @@ io.sockets.on('connection', function( socket ) {
 				}
 				if( !nameExists ) {
 					// Creating the player object
-					players[socket.id] = new Player( socket, newScreenName, 1000 );
+					players[socket.id] = new Player( socket, newScreenName, 5000 );
 					callback( { 'success': true, screenName: newScreenName, totalChips: players[socket.id].chips } );
 				} else {
 					callback( { 'success': false, 'message': 'This name is taken' } );
@@ -408,7 +408,7 @@ function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-tables[0] = new Table( 0, 'Sample 10-handed Table', eventEmitter(0), 10, 2, 1, 200, 40, false );
-tables[1] = new Table( 1, 'Sample 6-handed Table', eventEmitter(1), 6, 4, 2, 400, 80, false );
-tables[2] = new Table( 2, 'Sample 2-handed Table', eventEmitter(2), 2, 8, 4, 800, 160, false );
-tables[3] = new Table( 3, 'Sample 6-handed Private Table', eventEmitter(3), 6, 20, 10, 2000, 400, true );
+tables[0] = new Table( 0, 'Peter\'s 60-verjaarstafel (10 personen)', eventEmitter(0), 10, 10, 5, 500, 500, false );
+tables[1] = new Table( 1, 'Peter\'s 60-verjaarstafel (10 personen)', eventEmitter(1), 10, 10, 5, 500, 500, true );
+tables[2] = new Table( 2, 'Peter\'s 60-verjaarstafel (2 personen)', eventEmitter(2), 2, 10, 5, 500, 500, true );
+tables[3] = new Table( 3, 'Peter\'s 60-verjaarstafel (6 personen)', eventEmitter(3), 6, 10, 5, 500, 500, true );

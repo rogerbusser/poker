@@ -20,13 +20,15 @@ var Player = function( socket, name, chips ) {
         // The cards the player is holding, made public at the showdown
         cards: [],
         // The amount the player has bet in the current round
-        bet: 0
-	};
+        bet: 0,
+        // The chips that are available in the user's account
+        totalCredit: 0
+};
 	// The socket object of the user
 	this.socket = socket;
 	// The chips that are available in the user's account
 	this.chips = chips;
-	// The room that send the table events to the player
+    // The room that send the table events to the player
 	this.room = null;
 	// Is set to false if the player is not sitting on any tables, otherwise it's set to the table id
 	this.sittingOnTable = false;
@@ -46,7 +48,8 @@ Player.prototype.leaveTable = function() {
 		this.sitOut();
 		// Remove the chips from play
 		this.chips += this.public.chipsInPlay;
-		this.public.chipsInPlay = 0;
+        this.public.chipsInPlay = 0;
+        this.public.totalCredit= this.chips;
 		// Remove the player from the table
 		this.sittingOnTable = false;
 		this.seat = null;
@@ -63,6 +66,7 @@ Player.prototype.sitOnTable = function( tableId, seat, chips ) {
     // Remove the chips that player will have on the table, from the player object
     chips = parseInt(chips);
     this.chips -= chips;
+    this.public.totalCredit = this.chips;
     this.public.chipsInPlay = chips;
     // Add the table info in the player object
     this.seat = seat;
@@ -101,7 +105,7 @@ Player.prototype.bet = function( amount ) {
     }
 
     this.public.chipsInPlay -= amount;
-    this.public.bet += +amount;
+    this.public.bet += amount;
 }
 
 /**
@@ -116,7 +120,7 @@ Player.prototype.raise = function( amount ) {
     }
 
     this.public.chipsInPlay -= amount;
-    this.public.bet += +amount;
+    this.public.bet += amount;
 }
 
 /**

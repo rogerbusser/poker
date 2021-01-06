@@ -53,15 +53,15 @@
 		<div class="cell"></div>
 	</div>
 	<div class="row controls">
-		<div class="chat-cell">
-			<div id="chat" ng-controller="ChatController">
-				<div id="messages"></div>
-				<form ng-submit="sendMessage()">
-					<input type="text" ng-model="messageText">
-					<input type="submit" value="↵">
-				</form>
+			<div class="chat-cell">
+				<div id="chat" ng-controller="ChatController">
+					<div id="messages"></div>
+	<!--				<form ng-submit="sendMessage()">
+						<input type="text" ng-model="messageText">
+						<input type="submit" value="↵">
+					</form> -->
+				</div>
 			</div>
-		</div>
 		<div class="cell">
 			<button class="control-button" ng-click="fold()" ng-show="showFoldButton()">Fold</button>
 			<button class="control-button" ng-click="postBlind(false)" ng-show="actionState === 'postSmallBlind' || actionState === 'postBigBlind'">Sit Out</button>
