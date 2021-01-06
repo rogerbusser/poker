@@ -408,7 +408,7 @@ function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-tables[0] = new Table( 0, 'Peter\'s 60-verjaarstafel (10 personen)', eventEmitter(0), 10, 10, 5, 500, 500, false );
-tables[1] = new Table( 1, 'Peter\'s 60-verjaarstafel (10 personen)', eventEmitter(1), 10, 10, 5, 500, 500, true );
-tables[2] = new Table( 2, 'Peter\'s 60-verjaarstafel (2 personen)', eventEmitter(2), 2, 10, 5, 500, 500, true );
-tables[3] = new Table( 3, 'Peter\'s 60-verjaarstafel (6 personen)', eventEmitter(3), 6, 10, 5, 500, 500, true );
+tables[0] = new Table( 0, 'Pokertafel (10 personen)', eventEmitter(0), 10, 10, 5, 500, 500, false );
+tables[1] = new Table( 1, 'Pokertafel (10 personen)', eventEmitter(1), 10, 10, 5, 500, 500, true );
+tables[2] = new Table( 2, 'Pokertafel (2 personen)', eventEmitter(2), 2, 10, 5, 500, 500, true );
+tables[3] = new Table( 3, 'Pokertafel (6 personen)', eventEmitter(3), 6, 10, 5, 500, 500, true );
