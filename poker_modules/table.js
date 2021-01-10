@@ -768,11 +768,10 @@ Table.prototype.otherPlayersAreAllIn = function() {
 	var currentPlayer = this.public.activeSeat;
 	var playersAllIn = 0;
 	for( var i=0 ; i<this.playersInHandCount ; i++ ) {	// loop through all players
-		if(currentPlayer === this.public.activeSeat) {	// skip the current player
-			continue;
-		}
-		if( this.seats[currentPlayer].public.chipsInPlay === 0 ) {
-			playersAllIn++;
+		if(currentPlayer !== this.public.activeSeat) {	// skip the current player
+			if( this.seats[currentPlayer].public.chipsInPlay === 0 ) {
+				playersAllIn++;
+			}
 		}
 		currentPlayer = this.findNextPlayer( currentPlayer );
 	}
